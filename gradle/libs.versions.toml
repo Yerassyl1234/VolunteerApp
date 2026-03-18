@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.0"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
@@ -37,11 +37,12 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 
+compose-material3 = { module = "org.jetbrains.compose.material3:material3" }
 # Compose — версия берётся из плагина, не указываем вручную
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation" }
-compose-material3 = { module = "org.jetbrains.compose.material3:material3" }
+
 compose-ui = { module = "org.jetbrains.compose.ui:ui" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview" }

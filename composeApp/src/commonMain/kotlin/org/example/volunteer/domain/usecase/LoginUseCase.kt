@@ -4,6 +4,7 @@ import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.core.common.Result
 import org.example.volunteer.domain.entity.UserRole
+import org.example.volunteer.core.common.map
 
 class LoginUseCase(
     private val userRepository: UserRepository,

@@ -50,6 +50,10 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.koin.compose)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+            implementation(compose.material3)                    // ← добавь
+            implementation(compose.materialIconsExtended)
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
             implementation(libs.bundles.ktor)
@@ -90,7 +94,7 @@ android {
 }
 
 dependencies {
-    debugImplementation(libs.compose.uiTooling)
+    debugImplementation(compose.uiTooling)
     ksp(libs.androidx.room.compiler)
 }
 

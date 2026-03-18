@@ -1,41 +1,34 @@
 package org.example.volunteer.presentation.screens.main
 
-import androidx.lifecycle.ViewModel
+
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.example.volunteer.domain.repository.EventRepository
+import org.example.volunteer.presentation.BaseViewModel
 
 class MainEventViewModel(
-
-): ViewModel() {
-
-    private val _state= MutableStateFlow(MainEventUiState())
-    val state=_state.asStateFlow()
-
-    private val _effects=Channel<MainEventEffect>()
-    val effects=_effects.receiveAsFlow()
+    private val eventRepository: EventRepository
+) : BaseViewModel<MainEventUiState, MainEventAction, MainEventEffect>(
+    initialState = MainEventUiState()
+) {
 
     init {
-        onAction(MainEventAction.LoadInitialData)
+        onIntent(MainEventAction.LoadInitialData)
     }
 
-    fun onAction(action: MainEventAction){
-        when(action) {
+    override fun onIntent(intent: MainEventAction) {
+        when (intent) {
             is MainEventAction.CategorySelected -> TODO()
             MainEventAction.LoadInitialData -> loadAll()
             is MainEventAction.NavigateToEventDetails -> TODO()
             MainEventAction.Retry -> loadAll()
-            is MainEventAction.SearchEvent -> _state.update { it.copy(searchQuery = action.query) }
+            is MainEventAction.SearchEvent -> updateState { copy(searchQuery = intent.query) }
             is MainEventAction.ToggleNotification -> TODO()
         }
 
     }
 
-    private fun loadAll(){
-        viewModelScope.launch {  }
+    private fun loadAll() {
+        viewModelScope.launch { }
     }
 }

@@ -3,6 +3,7 @@ package org.example.volunteer.presentation.screens.createevent
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
+import org.example.volunteer.domain.entity.EventDraft
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -15,7 +16,8 @@ data class CreateEventUIState(
     val location: String = "",
     val requirements: List<RequirementItem> = emptyList(),
     val image: ImageState = ImageState.None,
-    val isSaveEnabled: Boolean = true
+    val isSaveEnabled: Boolean = true,
+    val isLoading: Boolean = false
 ) {
     val isPublishEnabled: Boolean
         get() = title.isNotBlank() &&
@@ -23,7 +25,19 @@ data class CreateEventUIState(
                 location.isNotBlank() &&
                 date != null &&
                 time != null
+
+    fun toDraft(): EventDraft = EventDraft(
+        title = title,
+        description = description,
+        category = null,
+        location = null,
+        dateMs = null,
+        totalSlots = 0,
+        coverUrl = (image as? ImageState.Ready)?.url,
+    )
 }
+
+
 
 data class RequirementItem @OptIn(ExperimentalUuidApi::class) constructor(
     val id: String= Uuid.random().toString(),

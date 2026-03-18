@@ -1,45 +1,52 @@
 package org.example.volunteer.presentation.screens.auth.registration
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.example.volunteer.core.common.Result
+import org.example.volunteer.core.common.toUiText
+import org.example.volunteer.domain.usecase.RegisterUseCase
+import org.example.volunteer.presentation.BaseViewModel
 
-class RegistrationViewModel : ViewModel() {
-    private val _state = MutableStateFlow<RegistrationUiState>(RegistrationUiState())
-    val state = _state.asStateFlow()
+class RegistrationViewModel(
+    private val registerUseCase: RegisterUseCase,
+) : BaseViewModel<RegistrationUiState, RegistrationAction, RegistrationEffect>(
+    initialState = RegistrationUiState()
+) {
 
-    private val _effects=Channel<RegistrationEffect>()
-    val effects=_effects.receiveAsFlow()
+    override fun onIntent(intent: RegistrationAction) {
+        when (intent) {
+            is RegistrationAction.InputEmail ->
+                updateState { copy(email = intent.email) }
 
-    fun onAction(action: RegistrationAction) {
-        when (action) {
-            is RegistrationAction.InputEmail -> {
-                _state.update { it.copy(email = action.email) }
-            }
+            is RegistrationAction.InputPassword ->
+                updateState { copy(password = intent.password) }
 
-            is RegistrationAction.InputPassword -> {
-                _state.update { it.copy(password = action.password) }
-            }
+            is RegistrationAction.InputUserName ->
+                updateState { copy(name = intent.name) }
 
-            is RegistrationAction.InputUserName -> {
-                _state.update { it.copy(name = action.name) }
-            }
+            is RegistrationAction.SelectRole ->
+                updateState { copy(selectedRole = intent.role) }
 
-            RegistrationAction.RegistrationButton -> TODO()
-
-            is RegistrationAction.SelectRole -> {
-                _state.update { it.copy(selectedRole = action.role) }
-            }
+            RegistrationAction.RegistrationButton ->
+                register()
 
             RegistrationAction.SwitchToLogin ->
-                viewModelScope.launch {
-                    _effects.send(RegistrationEffect.NavigateToLogin)
-                }
+                sendEffect(RegistrationEffect.NavigateToLogin)
+        }
+    }
+
+    private fun register() = viewModelScope.launch {
+        updateState { copy(isLoading = true) }
+        val s = state.value
+        when (val result = registerUseCase(s.name, s.email, s.password, s.selectedRole)) {
+            is Result.Success -> {
+                updateState { copy(isLoading = false) }
+                sendEffect(RegistrationEffect.NavigateToHome(result.data))
+            }
+            is Result.Error -> {
+                updateState { copy(isLoading = false) }
+                sendEffect(RegistrationEffect.ShowError(result.exception.toUiText()))
+            }
         }
     }
 }
