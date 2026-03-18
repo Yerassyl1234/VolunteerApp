@@ -14,7 +14,6 @@ private fun EventSearchBarPreview(){
         EventSearchBar(
             searchQuery = "akokfsop",
             onSearchQueryChanged = {},
-            onImeSearch = {},
             modifier = Modifier
                 .fillMaxWidth(  )
         )
