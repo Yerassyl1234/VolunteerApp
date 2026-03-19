@@ -1,47 +1,42 @@
-package org.example.project
+package org.example.volunteer
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
-
-import volunteerapp.composeapp.generated.resources.Res
-import volunteerapp.composeapp.generated.resources.compose_multiplatform
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.example.volunteer.domain.entity.UserRole
+import org.example.volunteer.presentation.AppState
+import org.example.volunteer.presentation.AppViewModel
+import org.example.volunteer.presentation.navigation.AuthNavHost
+import org.example.volunteer.presentation.navigation.OrganizerNavHost
+import org.example.volunteer.presentation.navigation.VolunteerNavHost
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-@Preview
-fun App() {
+fun App(appViewModel: AppViewModel = koinViewModel()) {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+        val state by appViewModel.state.collectAsStateWithLifecycle()
+
+        when (val current = state) {
+            AppState.Loading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+
+            AppState.NotAuthorized -> {
+                AuthNavHost(onAuthSuccess = appViewModel::onAuthSuccess)
+            }
+
+            is AppState.Authorized -> {
+                when (current.role) {
+                    UserRole.VOLUNTEER -> VolunteerNavHost(onLogout = appViewModel::onLogout)
+                    UserRole.ORGANIZER -> OrganizerNavHost(onLogout = appViewModel::onLogout)
                 }
             }
         }
