@@ -1,4 +1,4 @@
-package org.example.volunteer.presentation.screens.auth.registration
+package org.example.volunteer.presentation.screens.registration
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -36,6 +36,7 @@ class RegistrationViewModel(
     }
 
     private fun register() = viewModelScope.launch {
+        if (!state.value.canSubmit) return@launch
         updateState { copy(isLoading = true) }
         val s = state.value
         when (val result = registerUseCase(s.name, s.email, s.password, s.selectedRole)) {

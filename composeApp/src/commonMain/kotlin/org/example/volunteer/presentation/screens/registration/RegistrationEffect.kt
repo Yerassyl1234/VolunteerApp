@@ -1,4 +1,4 @@
-package org.example.volunteer.presentation.screens.auth.registration
+package org.example.volunteer.presentation.screens.registration
 
 import org.example.volunteer.domain.entity.UserRole
 import org.example.volunteer.core.ui.UiText
