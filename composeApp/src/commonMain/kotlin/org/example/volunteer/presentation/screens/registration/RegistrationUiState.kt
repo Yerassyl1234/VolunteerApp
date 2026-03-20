@@ -1,0 +1,20 @@
+package org.example.volunteer.presentation.screens.registration
+
+import androidx.compose.runtime.Immutable
+import org.example.volunteer.domain.entity.UserRole
+
+
+@Immutable
+data class RegistrationUiState(
+    val selectedRole: UserRole = UserRole.VOLUNTEER,
+    val name: String = "",
+    val email: String = "",
+    val password: String = "",
+    val isLoading: Boolean = false
+) {
+    val isValid
+        get() = name.isNotBlank()
+                && email.contains("@")
+                && password.length >= 6
+    val canSubmit get() = isValid && !isLoading
+}
