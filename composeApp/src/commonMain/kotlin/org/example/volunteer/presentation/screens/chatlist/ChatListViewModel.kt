@@ -1,7 +1,9 @@
 package org.example.volunteer.presentation.screens.chatlist
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.repository.ChatRepository
 import org.example.volunteer.presentation.BaseViewModel
 
@@ -22,11 +24,18 @@ class ChatListViewModel(
     }
 
     private fun load() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            chatRepository.getChats().collect { chats ->
-                updateState { copy(chats = chats, isLoading = false) }
+        chatRepository.getChats()
+            .onEach { result ->
+                updateState {
+                    copy(
+                        isLoading = result.isLoading,
+                        chats = result.getOrNull()?:chats,
+                    )
+                }
+                result.onError {
+                    sendEffect(ChatListEffect.ShowError(it.toUiText()))
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 }

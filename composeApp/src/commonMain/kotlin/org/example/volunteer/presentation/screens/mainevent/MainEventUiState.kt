@@ -1,4 +1,4 @@
-package org.example.volunteer.presentation.screens.main
+package org.example.volunteer.presentation.screens.mainevent
 
 import androidx.compose.runtime.Immutable
 import org.example.volunteer.core.ui.UiText

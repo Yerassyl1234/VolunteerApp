@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.example.volunteer.domain.entity.UserRole
+import org.example.volunteer.presentation.screens.login.LoginScreen
+import org.example.volunteer.presentation.screens.registration.RegistrationScreen
 
 @Composable
 fun AuthNavHost(onAuthSuccess: (UserRole) -> Unit) {
@@ -13,12 +15,23 @@ fun AuthNavHost(onAuthSuccess: (UserRole) -> Unit) {
 
     NavHost(
         navController = navController,
-        startDestination = LoginRoute) {
+        startDestination = LoginRoute
+    ) {
         composable<LoginRoute> {
-            Sample("Login")
+            LoginScreen(
+                onAuthSuccess=onAuthSuccess,
+                onNavigateToRegistration = {
+                    navController.navigate(RegistrationRoute)
+                }
+            )
         }
         composable<RegistrationRoute> {
-            Sample("Registration")
+            RegistrationScreen(
+                onAuthSuccess = onAuthSuccess,
+                onNavigateToLogin = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

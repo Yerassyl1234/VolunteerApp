@@ -1,23 +1,26 @@
 package org.example.volunteer.presentation.screens.volunteerprofile
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.example.volunteer.core.common.asNetworkResult
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.LogoutUseCase
 import org.example.volunteer.presentation.BaseViewModel
 
 class VolunteerProfileViewModel(
     private val userRepository: UserRepository,
-    private val logoutUseCase: LogoutUseCase
-): BaseViewModel<VolunteerProfileUiState, VolunteerProfileAction, VolunteerProfileEffect>(
+    private val logoutUseCase: LogoutUseCase,
+) : BaseViewModel<VolunteerProfileUiState, VolunteerProfileAction, VolunteerProfileEffect>(
     initialState = VolunteerProfileUiState()
 ) {
     init {
         loadProfile()
     }
 
-    override fun onIntent(intent: VolunteerProfileAction){
-        when(intent) {
+    override fun onIntent(intent: VolunteerProfileAction) {
+        when (intent) {
             VolunteerProfileAction.EditProfile -> sendEffect(VolunteerProfileEffect.NavigateToEditProfile)
             VolunteerProfileAction.Logout -> performLogout()
             VolunteerProfileAction.NotificationSettings -> sendEffect(VolunteerProfileEffect.NavigateToNotificationSettings)
@@ -26,12 +29,17 @@ class VolunteerProfileViewModel(
     }
 
     private fun loadProfile() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            userRepository.getVolunteerProfile("me").collect { profile ->
-                updateState { copy(profile = profile, isLoading = false) }
+        userRepository.getVolunteerProfile("me")
+            .asNetworkResult()
+            .onEach { result ->
+                updateState {
+                    copy(
+                        isLoading = result.isLoading,
+                        profile = result.getOrNull()?:profile,
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     private fun performLogout() = viewModelScope.launch {
@@ -43,5 +51,4 @@ class VolunteerProfileViewModel(
         // TODO
         updateState { copy(profile = profile?.copy(avatarUrl = imageUrl)) }
     }
-
 }

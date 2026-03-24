@@ -1,6 +1,5 @@
 package org.example.volunteer.core.common
 
-import org.example.volunteer.core.ui.UiText
 
 sealed class AppException(message: String) : Exception(message) {
     class ValidationException(msg: String) : AppException(msg)

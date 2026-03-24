@@ -1,4 +1,4 @@
-package org.example.volunteer.presentation.screens.main.components
+package org.example.volunteer.presentation.screens.mainevent.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

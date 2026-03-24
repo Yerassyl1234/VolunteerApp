@@ -1,7 +1,9 @@
 package org.example.volunteer.presentation.screens.orgmyevents
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.example.volunteer.core.common.asNetworkResult
 import org.example.volunteer.domain.entity.EventFilter
 import org.example.volunteer.domain.entity.EventStatus
 import org.example.volunteer.domain.repository.EventRepository
@@ -20,31 +22,27 @@ class OrgMyEventsViewModel(
         when (intent) {
             OrgMyEventsAction.LoadInitialData -> loadAll()
             is OrgMyEventsAction.NavigateToManage -> sendEffect(
-                OrgMyEventsEffect.NavigateToManage(
-                    intent.eventId
-                )
+                OrgMyEventsEffect.NavigateToManage(intent.eventId)
             )
-
             is OrgMyEventsAction.NavigateToDetail -> sendEffect(
-                OrgMyEventsEffect.NavigateToDetail(
-                    intent.eventId
-                )
+                OrgMyEventsEffect.NavigateToDetail(intent.eventId)
             )
         }
     }
 
     private fun loadAll() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            eventRepository.getEvents(EventFilter()).collect { events ->
+        eventRepository.getEvents(EventFilter())
+            .asNetworkResult()
+            .onEach { result ->
+                val allEvents = result.getOrNull() ?: (state.value.activeEvents + state.value.archiveEvents)
                 updateState {
                     copy(
-                        activeEvents = events.filter { it.status == EventStatus.ACTIVE },
-                        archiveEvents = events.filter { it.status == EventStatus.ARCHIVED },
-                        isLoading = false,
+                        isLoading = result.isLoading,
+                        activeEvents = allEvents.filter { it.status == EventStatus.ACTIVE },
+                        archiveEvents = allEvents.filter { it.status == EventStatus.ARCHIVED },
                     )
                 }
             }
-        }
+            .launchIn(viewModelScope)
     }
 }

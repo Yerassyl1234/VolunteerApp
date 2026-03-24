@@ -1,12 +1,16 @@
 package org.example.volunteer.presentation.screens.chatroom
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.example.volunteer.core.common.asNetworkResult
+import org.example.volunteer.core.common.handle
+import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.repository.ChatRepository
 import org.example.volunteer.domain.usecase.SendMessageUseCase
 import org.example.volunteer.presentation.BaseViewModel
-import org.example.volunteer.core.common.Result
-import org.example.volunteer.core.common.toUiText
+import org.example.volunteer.presentation.screens.chatroom.ChatRoomEffect.ShowError
 
 class ChatRoomViewModel(
     private val chatRepository: ChatRepository,
@@ -23,19 +27,28 @@ class ChatRoomViewModel(
     }
 
     private fun load(chatId: String) {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true, chatId = chatId) }
-            chatRepository.observeMessages(chatId).collect { messages ->
-                updateState { copy(messages = messages, isLoading = false) }
+        updateState { copy(chatId = chatId) }
+        chatRepository.observeMessages(chatId)
+            .asNetworkResult()
+            .onEach { result ->
+                updateState {
+                    copy(
+                        isLoading = result.isLoading,
+                        messages = result.getOrNull()?:messages,
+                    )
+                }
+                result.onError {
+                    sendEffect(ShowError(it.toUiText()))
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     private fun send() = viewModelScope.launch {
         if (!state.value.canSend) return@launch
-        when (val result = sendMessage(state.value.chatId, state.value.messageText)) {
-            is Result.Success -> updateState { copy(messageText = "") }
-            is Result.Error -> sendEffect(ChatRoomEffect.ShowError(result.exception.toUiText()))
-        }
+        sendMessage(state.value.chatId, state.value.messageText).handle(
+            onSuccess = { updateState { copy(messageText = "") } },
+            onError = { sendEffect(ShowError(it.toUiText())) }
+        )
     }
 }

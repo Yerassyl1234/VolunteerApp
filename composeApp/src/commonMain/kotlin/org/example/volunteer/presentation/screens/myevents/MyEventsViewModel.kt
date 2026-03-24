@@ -1,14 +1,17 @@
 package org.example.volunteer.presentation.screens.myevents
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import org.example.volunteer.core.common.asNetworkResult
+import org.example.volunteer.core.common.handle
+import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.entity.EventFilter
 import org.example.volunteer.domain.repository.EventRepository
 import org.example.volunteer.domain.usecase.CancelApplicationUseCase
 import org.example.volunteer.presentation.BaseViewModel
-import org.example.volunteer.core.common.Result
-import kotlinx.datetime.Clock
-import org.example.volunteer.core.common.toUiText
 
 class MyEventsViewModel(
     private val eventRepository: EventRepository,
@@ -29,35 +32,34 @@ class MyEventsViewModel(
     }
 
     private fun loadAll() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            eventRepository.getEvents(EventFilter()).collect { events ->
+        eventRepository.getEvents(EventFilter())
+            .asNetworkResult()
+            .onEach { result ->
                 val now = Clock.System.now().toEpochMilliseconds()
+                val allEvents = result.getOrNull() ?: (state.value.upcomingEvents + state.value.archiveEvents)
                 updateState {
                     copy(
-                        upcomingEvents = events.filter { it.dateMs > now },
-                        archiveEvents = events.filter { it.dateMs <= now },
-                        isLoading = false,
+                        isLoading = result.isLoading,
+                        upcomingEvents = allEvents.filter { it.dateMs > now },
+                        archiveEvents = allEvents.filter { it.dateMs <= now },
                     )
                 }
+                result.onError {
+                    sendEffect(MyEventsEffect.ShowError(it.toUiText()))
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     private fun cancel(applicationId: String, eventId: String) = viewModelScope.launch {
-        when (val result = cancelApplication(applicationId, eventId)) {
-            is Result.Success -> {
+        cancelApplication(applicationId, eventId).handle(
+            onSuccess = {
                 updateState {
-                    copy(
-                        upcomingEvents = upcomingEvents.filterNot { it.id == eventId }
-                    )
+                    copy(upcomingEvents = upcomingEvents.filterNot { it.id == eventId })
                 }
                 sendEffect(MyEventsEffect.CancellationSuccess)
-            }
-
-            is Result.Error -> {
-                sendEffect(MyEventsEffect.ShowError(result.exception.toUiText()))
-            }
-        }
+            },
+            onError = { sendEffect(MyEventsEffect.ShowError(it.toUiText())) }
+        )
     }
 }

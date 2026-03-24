@@ -18,16 +18,6 @@ kotlin {
         }
     }
 
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -41,6 +31,9 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.ktor.client.auth)
+            implementation(libs.ktor.client.logging)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -52,7 +45,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(compose.material3)                    // ← добавь
+            implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
