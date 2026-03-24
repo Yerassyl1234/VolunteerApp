@@ -7,6 +7,6 @@ sealed interface RegistrationAction {
     data class InputEmail(val email: String) : RegistrationAction
     data class InputPassword(val password: String) : RegistrationAction
     data class SelectRole(val role: UserRole) : RegistrationAction
-    data object RegistrationButton : RegistrationAction
-    data object SwitchToLogin : RegistrationAction
+    object RegistrationButton : RegistrationAction
+    object SwitchToLogin : RegistrationAction
 }

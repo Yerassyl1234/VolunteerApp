@@ -11,8 +11,8 @@ sealed interface CreateEventAction{
     data class SetLocation(val location: String) : CreateEventAction
     data class SetTime(val time: LocalTime?) : CreateEventAction
     data class RemoveRequirement(val id: String) : CreateEventAction
-    data object GenerateImage : CreateEventAction
-    data object RegenerateImage : CreateEventAction
-    data object BackButtonClick : CreateEventAction
-    data object PublishEvent : CreateEventAction
+    object GenerateImage : CreateEventAction
+    object RegenerateImage : CreateEventAction
+    object BackButtonClick : CreateEventAction
+    object PublishEvent : CreateEventAction
 }
