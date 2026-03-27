@@ -21,9 +21,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import org.example.volunteer.core.ui.DarkGreen
 import org.example.volunteer.core.ui.DesertWhite
-import org.example.volunteer.core.ui.Green
+import org.example.volunteer.core.ui.LightGreen
 import org.jetbrains.compose.resources.stringResource
 import volunteerapp.composeapp.generated.resources.Res
 import volunteerapp.composeapp.generated.resources.close_hint
@@ -37,7 +36,7 @@ fun EventSearchBar(
 ) {
     CompositionLocalProvider(
         LocalTextSelectionColors provides TextSelectionColors(
-            handleColor = Green,
+            handleColor = LightGreen,
             backgroundColor = DesertWhite
         )
     ) {
@@ -46,8 +45,11 @@ fun EventSearchBar(
             onValueChange = onSearchQueryChanged,
             shape = RoundedCornerShape(100),
             colors = OutlinedTextFieldDefaults.colors(
-                cursorColor = Green,
-                focusedBorderColor = DarkGreen
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
             ),
             placeholder = {
                 Text(

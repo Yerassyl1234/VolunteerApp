@@ -3,6 +3,7 @@ package org.example.volunteer.presentation.screens.chatlist
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.example.volunteer.core.common.asNetworkResult
 import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.repository.ChatRepository
 import org.example.volunteer.presentation.BaseViewModel
@@ -25,14 +26,15 @@ class ChatListViewModel(
 
     private fun load() {
         chatRepository.getChats()
+            .asNetworkResult()
             .onEach { result ->
                 updateState {
                     copy(
                         isLoading = result.isLoading,
-                        chats = result.getOrNull()?:chats,
+                        chats = result.getOrNull() ?: chats,
                     )
                 }
-                result.onError {
+                result.exceptionOrNull()?.let {
                     sendEffect(ChatListEffect.ShowError(it.toUiText()))
                 }
             }

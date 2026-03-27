@@ -9,8 +9,8 @@ import org.example.volunteer.domain.entity.Event
 data class MainEventUiState(
     val userName: String = "",
     val searchQuery: String = "",
-    val category: List<Category> = emptyList(),
-    val selectedCategory: Category? = null,
+    val categories: List<Category> = emptyList(),
+    val selectedCategory: Category = Category.ALL,
     val urgentEvent: Event? = null,
     val recommendedEvents: List<Event> = emptyList(),
     val isLoading: Boolean = false,
