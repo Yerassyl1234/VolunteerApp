@@ -3,8 +3,16 @@ package org.example.volunteer.di
 import org.example.volunteer.AppViewModel
 import org.example.volunteer.core.network.createHttpClient
 import org.example.volunteer.data.remote.api.AuthApi
+import org.example.volunteer.data.repository.ApplicationRepositoryImpl
+import org.example.volunteer.data.repository.ChatRepositoryImpl
+import org.example.volunteer.data.repository.EventRepositoryImpl
+import org.example.volunteer.data.repository.NotificationRepositoryImpl
 import org.example.volunteer.data.repository.SettingsRepositoryImpl
 import org.example.volunteer.data.repository.UserRepositoryImpl
+import org.example.volunteer.domain.repository.ApplicationRepository
+import org.example.volunteer.domain.repository.ChatRepository
+import org.example.volunteer.domain.repository.EventRepository
+import org.example.volunteer.domain.repository.NotificationRepository
 import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.AcceptApplicantUseCase
@@ -58,12 +66,12 @@ val appModule = module {
     viewModel { OrgProfileViewModel(get(), get()) }
     viewModel { AppViewModel(get()) }
 
-    single { createHttpClient(get()) }
+    single { createHttpClient(get(), get()) }
     single { AuthApi(get()) }
-    //single<ApplicationRepository> {}
-    //single<ChatRepository> {}
-    //single<EventRepository> {}
-    //single<NotificationRepository> {}
+    single<ApplicationRepository> { ApplicationRepositoryImpl() }
+    single<ChatRepository> { ChatRepositoryImpl() }
+    single<EventRepository> { EventRepositoryImpl() }
+    single<NotificationRepository> { NotificationRepositoryImpl() }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
 }

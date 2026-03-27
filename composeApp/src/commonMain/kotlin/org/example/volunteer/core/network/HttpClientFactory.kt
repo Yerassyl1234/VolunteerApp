@@ -14,7 +14,10 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.example.volunteer.domain.repository.SettingsRepository
 
-fun createHttpClient(settings: SettingsRepository): HttpClient =
+fun createHttpClient(
+    settings: SettingsRepository,
+    verboseLogging: HttpVerboseLogging,
+): HttpClient =
     HttpClient {
         defaultRequest {
             url("https://volunteer-app-1usm.onrender.com")
@@ -27,7 +30,7 @@ fun createHttpClient(settings: SettingsRepository): HttpClient =
         }
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.BODY
+            level = if (verboseLogging.isEnabled()) LogLevel.BODY else LogLevel.NONE
         }
         install(Auth) {
             bearer {
