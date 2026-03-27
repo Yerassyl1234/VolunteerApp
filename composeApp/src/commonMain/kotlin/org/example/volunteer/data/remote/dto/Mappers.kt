@@ -13,7 +13,7 @@ fun EventResponseDto.toDomain() = Event(
     id = id,
     title = title,
     description = description,
-    category = try { Category.valueOf(category) } catch (_: Exception) { Category.ECOLOGY },
+    category = try { Category.valueOf(category.uppercase()) } catch (_: Exception) { Category.ECOLOGY },
     location = Location(
         name = locationName,
         address = locationAddress,
@@ -110,6 +110,14 @@ fun VolunteerProfileResponseDto.toDomain() = VolunteerProfile(
     email = email,
     eventsAttended = eventsAttended,
     hoursVolunteered = hoursVolunteered,
+    badges = badges.map{ it.toDomain() },
+)
+
+fun BadgeResponseDto.toDomain() = Badge(
+    id = id,
+    title = title,
+    iconUrl=iconUrl,
+    isUnlocked=isUnlocked
 )
 
 fun OrganizerProfileResponseDto.toDomain() = OrganizerProfile(

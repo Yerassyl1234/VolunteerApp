@@ -65,7 +65,7 @@ class ManageEventViewModel(
 
     private fun acceptApplicant(applicationId: String) = viewModelScope.launch {
         updateState { copy(processingId = applicationId) }
-        acceptUseCase(applicationId).handle(
+        applicationRepository.accept(applicationId).handle(
             onSuccess = {
                 val accepted = state.value.pendingApplications
                     .find { it.id == applicationId }

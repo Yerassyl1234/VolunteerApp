@@ -13,13 +13,11 @@ import org.example.volunteer.data.remote.api.ProfileApi
 import org.example.volunteer.data.repository.ApplicationRepositoryImpl
 import org.example.volunteer.data.repository.ChatRepositoryImpl
 import org.example.volunteer.data.repository.EventRepositoryImpl
-import org.example.volunteer.data.repository.NotificationRepositoryImpl
 import org.example.volunteer.data.repository.SettingsRepositoryImpl
 import org.example.volunteer.data.repository.UserRepositoryImpl
 import org.example.volunteer.domain.repository.ApplicationRepository
 import org.example.volunteer.domain.repository.ChatRepository
 import org.example.volunteer.domain.repository.EventRepository
-import org.example.volunteer.domain.repository.NotificationRepository
 import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.AcceptApplicantUseCase
@@ -69,7 +67,7 @@ val appModule = module {
     viewModel { MyEventsViewModel(get(), get()) }
     viewModel { OrgMyEventsViewModel(get()) }
     viewModel { ManageEventViewModel(get(), get(), get(), get()) }
-    viewModel { VolunteerProfileViewModel(get(), get()) }
+    viewModel { VolunteerProfileViewModel(get(), get(),get()) }
     viewModel { OrgProfileViewModel(get(), get()) }
     viewModel { AppViewModel(get()) }
 
@@ -87,6 +85,5 @@ val appModule = module {
     single<ApplicationRepository> { ApplicationRepositoryImpl(get()) }
     single { Json { ignoreUnknownKeys = true; isLenient = true } }
     single<ChatRepository> { ChatRepositoryImpl(get(), get(), get(), get()) }
-    single<NotificationRepository> { NotificationRepositoryImpl(get()) }
     single { get<AppDatabase>().eventDao()}
 }

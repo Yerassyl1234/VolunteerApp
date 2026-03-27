@@ -1,38 +1,29 @@
 package org.example.volunteer.presentation.screens.mainevent
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.example.volunteer.core.ui.*
 import org.example.volunteer.presentation.screens.mainevent.components.CategoryChip
 import org.example.volunteer.presentation.screens.mainevent.components.EventCard
 import org.example.volunteer.presentation.screens.mainevent.components.EventSearchBar
 import org.example.volunteer.presentation.screens.mainevent.components.UrgentEventCard
 import org.jetbrains.compose.resources.stringResource
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import volunteerapp.composeapp.generated.resources.Res
 import volunteerapp.composeapp.generated.resources.recommended_events_title
 import volunteerapp.composeapp.generated.resources.retry_button
@@ -58,24 +49,30 @@ fun MainEventScreen(
     }
 
     Scaffold(
+        containerColor = PremiumBackground,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                EventSearchBar(
-                    searchQuery = state.searchQuery,
-                    onSearchQueryChanged = { vm.onIntent(MainEventAction.SearchEvent(it)) },
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-                LazyRow(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(state.categories) { category ->
-                        CategoryChip(
-                            category = category,
-                            isSelected = category == state.selectedCategory,
-                            onSelect = { vm.onIntent(MainEventAction.CategorySelected(category)) }
-                        )
+            Surface(
+                color = PremiumBackground,
+                shadowElevation = 0.dp
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+                    EventSearchBar(
+                        searchQuery = state.searchQuery,
+                        onSearchQueryChanged = { vm.onIntent(MainEventAction.SearchEvent(it)) },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    )
+                    LazyRow(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(state.categories) { category ->
+                            CategoryChip(
+                                category = category,
+                                isSelected = category == state.selectedCategory,
+                                onSelect = { vm.onIntent(MainEventAction.CategorySelected(category)) }
+                            )
+                        }
                     }
                 }
             }
@@ -85,17 +82,19 @@ fun MainEventScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             state.urgentEvent?.let { urgent ->
                 item {
                     Text(
                         text = stringResource(Res.string.urgent_help_title),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.ExtraBold,
+                        color = PremiumDarkText,
+                        fontSize = 22.sp
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(12.dp))
                     UrgentEventCard(event = urgent) {
                         vm.onIntent(MainEventAction.NavigateToEventDetails(urgent.id))
                     }
@@ -106,32 +105,39 @@ fun MainEventScreen(
                 Text(
                     text = stringResource(Res.string.recommended_events_title),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.ExtraBold,
+                    color = PremiumDarkText,
+                    fontSize = 22.sp
                 )
             }
 
             if (state.isLoading) {
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(40.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = LightGreen)
                     }
                 }
             } else if (state.errorMessage != null) {
                 item {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(40.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = state.errorMessage!!.asString(),
-                            color = MaterialTheme.colorScheme.error
+                            color = PremiumRed,
+                            fontWeight = FontWeight.Medium
                         )
-                        Spacer(Modifier.height(8.dp))
-                        TextButton(onClick = { vm.onIntent(MainEventAction.Retry) }) {
-                            Text(stringResource(Res.string.retry_button))
+                        Spacer(Modifier.height(16.dp))
+                        Button(
+                            onClick = { vm.onIntent(MainEventAction.Retry) },
+                            colors = ButtonDefaults.buttonColors(containerColor = PremiumRedLight, contentColor = PremiumRed),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(stringResource(Res.string.retry_button), fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -143,7 +149,7 @@ fun MainEventScreen(
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
         }
     }
 }

@@ -9,7 +9,7 @@ import org.example.volunteer.domain.entity.ReminderType
 import org.example.volunteer.domain.repository.NotificationRepository
 import java.util.concurrent.TimeUnit
 
-class NotificationRepositoryImpl(
+class NotificationRepImpl(
     private val context: Context,
 ) : NotificationRepository {
 

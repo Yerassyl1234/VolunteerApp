@@ -24,6 +24,7 @@ import io.ktor.client.plugins.websocket.WebSockets
 
 fun createHttpClient(settings: SettingsRepository): HttpClient =
     HttpClient {
+        expectSuccess = true
         defaultRequest {
             url("https://volunteer-app-1usm.onrender.com")
         }
@@ -39,7 +40,9 @@ fun createHttpClient(settings: SettingsRepository): HttpClient =
             logger = Logger.DEFAULT
             level = LogLevel.BODY
         }
+
         install(WebSockets)
+
         install(Auth) {
             bearer {
                 loadTokens {
@@ -49,7 +52,14 @@ fun createHttpClient(settings: SettingsRepository): HttpClient =
                 }
 
                 refreshTokens {
-                    val refreshToken = oldTokens?.refreshToken ?: return@refreshTokens null
+                    val currentAccess = settings.getAccessToken()
+                    val currentRefresh = settings.getRefreshToken()
+
+                    if (!currentAccess.isNullOrEmpty() && currentAccess != oldTokens?.accessToken) {
+                        return@refreshTokens BearerTokens(currentAccess, currentRefresh ?: "")
+                    }
+
+                    val refreshToken = currentRefresh ?: return@refreshTokens null
                     try {
                         val response: TokenPairResponseDto = client.post("/auth/refresh") {
                             contentType(ContentType.Application.Json)
@@ -63,6 +73,8 @@ fun createHttpClient(settings: SettingsRepository): HttpClient =
                         null
                     }
                 }
+
+                sendWithoutRequest { true }
             }
         }
     }

@@ -1,21 +1,11 @@
 package org.example.volunteer.presentation.screens.mainevent.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,22 +13,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
-import org.example.volunteer.core.ui.DesertWhite
-import org.example.volunteer.core.ui.LightGreen
+import org.example.volunteer.core.ui.*
 import org.example.volunteer.domain.entity.Event
 
 @Composable
 fun EventCard(event: Event, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Card(
-        modifier = modifier.clickable { onClick() },
+    ElevatedCard(
+        modifier = modifier.clickable { onClick() }.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = DesertWhite)
+        colors = CardDefaults.elevatedCardColors(containerColor = PremiumSurface),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -48,7 +38,7 @@ fun EventCard(event: Event, modifier: Modifier = Modifier, onClick: () -> Unit) 
                 model = event.coverUrl?.ifBlank { null },
                 contentDescription = null,
                 modifier = Modifier
-                    .size(85.dp)
+                    .size(90.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
             ) {
@@ -58,7 +48,6 @@ fun EventCard(event: Event, modifier: Modifier = Modifier, onClick: () -> Unit) 
                     is AsyncImagePainter.State.Error -> {
                         ImagePlaceholder()
                     }
-
                     else -> {
                         SubcomposeAsyncImageContent()
                     }
@@ -71,24 +60,34 @@ fun EventCard(event: Event, modifier: Modifier = Modifier, onClick: () -> Unit) 
                 Text(
                     text = event.title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    maxLines = 1
+                    fontSize = 17.sp,
+                    color = PremiumDarkText,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = event.category.name,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = PremiumGrayText,
+                    fontWeight = FontWeight.Medium
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = null,
-                        modifier = Modifier.size(14.dp),
+                        modifier = Modifier.size(16.dp),
                         tint = LightGreen
                     )
-                    Spacer(Modifier.width(4.dp))
-                    Text(text = event.location.address, style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = event.location.address, 
+                        style = MaterialTheme.typography.bodySmall,
+                        color = PremiumGrayText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
             }
         }

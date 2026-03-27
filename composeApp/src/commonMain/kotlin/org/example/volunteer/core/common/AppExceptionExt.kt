@@ -7,7 +7,7 @@ import volunteerapp.composeapp.generated.resources.error_not_found
 import volunteerapp.composeapp.generated.resources.error_unauthorized
 
 fun AppException.toUiText(): UiText = when (this) {
-    is AppException.NetworkException -> UiText.ResString(Res.string.error_network)
+    is AppException.NetworkException -> UiText.DynamicString(message ?: "Ошибка сети")
     is AppException.UnauthorizedException -> UiText.ResString(Res.string.error_unauthorized)
     is AppException.NotFoundException -> UiText.ResString(Res.string.error_not_found)
     is AppException.ServerException -> UiText.DynamicString("Ошибка сервера: $code")

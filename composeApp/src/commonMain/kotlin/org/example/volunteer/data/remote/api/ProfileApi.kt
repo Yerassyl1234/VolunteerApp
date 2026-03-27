@@ -13,6 +13,12 @@ import org.example.volunteer.data.remote.dto.VolunteerProfileResponseDto
 
 class ProfileApi(private val client: HttpClient) {
 
+    suspend fun getMyVolunteerProfile(): VolunteerProfileResponseDto =
+        client.get("/volunteers/me").body()
+
+    suspend fun getMyOrganizerProfile(): OrganizerProfileResponseDto =
+        client.get("/organizers/me").body()
+
     suspend fun getVolunteerProfile(id: String): VolunteerProfileResponseDto =
         client.get("/volunteers/$id").body()
 

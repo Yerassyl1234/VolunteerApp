@@ -5,6 +5,8 @@ import org.example.volunteer.domain.entity.UserRole
 
 
 interface SettingsRepository {
+    suspend fun getUserId(): String?
+    suspend fun saveUserId(id: String)
     suspend fun getAccessToken(): String?
     suspend fun getRefreshToken(): String?
     suspend fun saveTokens(accessToken: String, refreshToken: String)

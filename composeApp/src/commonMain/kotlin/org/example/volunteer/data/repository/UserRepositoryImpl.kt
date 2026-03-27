@@ -49,4 +49,7 @@ class UserRepositoryImpl(
     override fun getOrganizerProfile(id: String): Flow<OrganizerProfile> = flow {
         emit(profileApi.getOrganizerProfile(id).toDomain())
     }
+    override fun getMyVolunteerProfile(): Flow<VolunteerProfile> = flow {
+        emit(profileApi.getMyVolunteerProfile().toDomain())
+    }
 }

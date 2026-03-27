@@ -18,6 +18,7 @@ class SettingsRepositoryImpl(
         val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
         val KEY_REFRESH_TOKEN = stringPreferencesKey("refresh_token")
         val KEY_ROLE = stringPreferencesKey("role")
+        val KEY_USER_ID = stringPreferencesKey("user_id")
     }
 
     override suspend fun getAccessToken(): String? =
@@ -36,6 +37,12 @@ class SettingsRepositoryImpl(
             prefs[KEY_ACCESS_TOKEN] = accessToken
             prefs[KEY_REFRESH_TOKEN] = refreshToken
         }
+    }
+    override suspend fun getUserId(): String? =
+        dataStore.data.map { it[KEY_USER_ID] }.first()
+
+    override suspend fun saveUserId(id: String) {
+        dataStore.edit { it[KEY_USER_ID] = id }
     }
 
     override suspend fun saveRole(role: UserRole) {

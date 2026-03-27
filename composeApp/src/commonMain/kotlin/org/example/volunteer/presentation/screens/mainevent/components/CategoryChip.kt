@@ -9,18 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.example.volunteer.core.ui.LightGreen
-import org.example.volunteer.core.ui.LightGrey
+import org.example.volunteer.core.ui.*
 import org.example.volunteer.domain.entity.Category
 
 @Composable
@@ -30,9 +29,14 @@ fun CategoryChip(
     onSelect: () -> Unit
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) LightGreen else LightGrey,
+        targetValue = if (isSelected) LightGreen else PremiumSurface,
         label = "bgColor"
     )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else PremiumDarkText,
+        label = "textColor"
+    )
+    
     Box(
         modifier = Modifier
             .clip(CircleShape)
@@ -46,9 +50,9 @@ fun CategoryChip(
     ) {
         Text(
             text = category.title,
-            color = MaterialTheme.colorScheme.background,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            color = textColor,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
