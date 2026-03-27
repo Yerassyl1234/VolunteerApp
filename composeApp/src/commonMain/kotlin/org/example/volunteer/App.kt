@@ -17,10 +17,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(appViewModel: AppViewModel = koinViewModel()) {
-
     MaterialTheme {
         val state by appViewModel.state.collectAsStateWithLifecycle()
-
         when (val current = state) {
             AppState.Loading -> {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

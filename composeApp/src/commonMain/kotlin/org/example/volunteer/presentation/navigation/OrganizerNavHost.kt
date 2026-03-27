@@ -15,22 +15,24 @@ fun OrganizerNavHost(onLogout: () -> Unit) {
         startDestination = OrgMyEventsRoute
     ) {
         composable<OrgMyEventsRoute> {
-            Sample("Organizer · My Events")
+            OrgMyEventScreen(
+
+            )
         }
         composable<ManageEventRoute> {
-            Sample("Manage Event")
+            ManageEventScreen()
         }
         composable<OrgAICreateRoute> {
-            Sample("AI Create")
+            AICreateScreen()
         }
         composable<OrgChatListRoute> {
-            Sample("Chat List")
+            ChatListScreen()
         }
         composable<ChatRoomRoute> {
-            Sample("Chat Room")
+            ChatRoomScreen()
         }
         composable<OrgProfileRoute> {
-            Sample("Organizer · Profile")
+            OrgProfileScreen()
         }
     }
 }

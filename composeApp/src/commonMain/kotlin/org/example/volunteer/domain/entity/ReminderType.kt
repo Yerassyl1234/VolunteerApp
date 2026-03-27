@@ -1,7 +1,6 @@
 package org.example.volunteer.domain.entity
 
-enum class ReminderType {
-    DAY_BEFORE,
-    HOUR_BEFORE
-    //add if necessary
+enum class ReminderType(val hoursBeforeEvent: Long) {
+    DAY_BEFORE(hoursBeforeEvent = 24),
+    TWO_HOURS_BEFORE(hoursBeforeEvent = 2),
 }
