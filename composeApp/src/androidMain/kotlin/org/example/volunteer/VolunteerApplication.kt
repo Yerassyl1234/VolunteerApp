@@ -1,6 +1,7 @@
 package org.example.volunteer
 
 import android.app.Application
+import org.example.volunteer.di.androidPlatformModule
 import org.example.volunteer.di.appModule
 import org.example.volunteer.di.dataStoreModule
 import org.koin.android.ext.koin.androidContext
@@ -11,7 +12,7 @@ class VolunteerApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@VolunteerApplication)
-            modules(appModule, dataStoreModule)
+            modules(appModule, dataStoreModule, androidPlatformModule)
         }
     }
 }

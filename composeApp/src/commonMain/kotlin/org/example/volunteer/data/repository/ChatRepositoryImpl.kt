@@ -14,7 +14,7 @@ class ChatRepositoryImpl : ChatRepository {
 
     override fun getChats(): Flow<NetworkResult<List<Chat>>> {
         return networkResultFlowWithRetry(times = 3) {
-            //TODO
+            TODO("Not yet implemented")
         }
     }
 
