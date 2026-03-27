@@ -16,6 +16,7 @@ interface UserRepository {
         role: UserRole,
     ): NetworkResult<AuthResult>
     suspend fun logout(): NetworkResult<Unit>
+    fun getMyVolunteerProfile():Flow<VolunteerProfile>
     fun getVolunteerProfile(id: String): Flow<VolunteerProfile>
     fun getOrganizerProfile(id: String): Flow<OrganizerProfile>
 }

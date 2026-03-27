@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.example.volunteer.core.common.asNetworkResult
+import org.example.volunteer.core.common.toUiText
+import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.LogoutUseCase
 import org.example.volunteer.presentation.BaseViewModel
@@ -12,6 +14,7 @@ import org.example.volunteer.presentation.BaseViewModel
 class VolunteerProfileViewModel(
     private val userRepository: UserRepository,
     private val logoutUseCase: LogoutUseCase,
+    private val settingsRepository: SettingsRepository,
 ) : BaseViewModel<VolunteerProfileUiState, VolunteerProfileAction, VolunteerProfileEffect>(
     initialState = VolunteerProfileUiState()
 ) {
@@ -29,17 +32,32 @@ class VolunteerProfileViewModel(
     }
 
     private fun loadProfile() {
-        userRepository.getVolunteerProfile("me")
-            .asNetworkResult()
-            .onEach { result ->
-                updateState {
-                    copy(
-                        isLoading = result.isLoading,
-                        profile = result.getOrNull()?:profile,
-                    )
-                }
+        viewModelScope.launch {
+            val userId = settingsRepository.getUserId()
+            println("DEBUG_PROFILE: userId=$userId")
+            if (userId == null) {
+                println("DEBUG_PROFILE: userId is null!")
+                return@launch
             }
-            .launchIn(viewModelScope)
+            try {
+                userRepository.getVolunteerProfile(userId)
+                    .asNetworkResult()
+                    .onEach { result ->
+                        println("DEBUG_PROFILE: result=$result")
+                        updateState {
+                            copy(
+                                isLoading = result.isLoading,
+                                profile = result.getOrNull() ?: profile,
+                                error = result.exceptionOrNull()?.toUiText()
+                            )
+                        }
+                    }
+                    .launchIn(viewModelScope)
+            } catch (e: Exception) {
+                println("DEBUG_PROFILE: exception=${e.message}")
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun performLogout() = viewModelScope.launch {

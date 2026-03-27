@@ -1,9 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Поиск по событиям</string>
     <string name="close_hint">Clear search</string>
     <string name="error_network">No Internet connection</string>
     <string name="error_unauthorized">Need to authorize</string>
     <string name="error_not_found">Not found</string>
     <string name="error_server">Server error</string>
+    <string name="urgent_help_title">Срочно нужно помочь</string>
+    <string name="urgent_label">Срочно</string>
+    <string name="recommended_events_title">Рекомендуемые события</string>
+    <string name="retry_button">Повторить</string>
+
+    <!-- Profile Screen Strings -->
+    <string name="city_almaty">Алматы</string>
+    <string name="events_attended_label">событий</string>
+    <string name="hours_volunteered_label">часов</string>
+    <string name="badges_label">наград</string>
+    <string name="achievements_title">Достижения</string>
+    <string name="all_button">Все</string>
+    <string name="settings_title">Настройки</string>
+    <string name="notifications_setting">Уведомления</string>
+    <string name="language_setting">Язык</string>
+    <string name="language_russian">Русский</string>
+    <string name="privacy_setting">Конфиденциальность</string>
+    <string name="logout_button">Выход</string>
+    <string name="edit_button">Редактировать</string>
+
+    <!-- My Events Screen Strings -->
+    <string name="my_events_title">Мои события</string>
+    <string name="tab_upcoming">Предстоящие</string>
+    <string name="tab_archive">Архив</string>
+    <string name="empty_events">У вас пока нет событий</string>
+    <string name="cancel_application">Отменить заявку</string>
+
+    <!-- Navigation Strings -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_my_events">Мои события</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Auth Strings -->
+    <string name="welcome_title">Добро пожаловать!</string>
+    <string name="login_button">Войти</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="name_hint">Имя</string>
+    <string name="no_account">Нет аккаунта? Зарегистрироваться</string>
+    <string name="have_account">Уже есть аккаунт? Войти</string>
+    <string name="role_volunteer">Волонтёр</string>
+    <string name="role_organizer">Организатор</string>
 </resources>

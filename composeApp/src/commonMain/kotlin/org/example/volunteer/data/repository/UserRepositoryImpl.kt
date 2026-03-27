@@ -11,16 +11,20 @@ import org.example.volunteer.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.example.volunteer.core.common.NetworkResult
+import org.example.volunteer.data.remote.api.ProfileApi
+import org.example.volunteer.domain.repository.SettingsRepository
 
 class UserRepositoryImpl(
-    private val api: AuthApi,
+    private val authApi: AuthApi,
+    private val profileApi: ProfileApi,
+    private val settings: SettingsRepository,
 ) : UserRepository {
 
     override suspend fun login(
         email: String,
         password: String,
     ): NetworkResult<AuthResult> = safeApiCall {
-        api.login(email, password).toDomain()
+        authApi.login(email, password).toDomain()
     }
 
     override suspend fun register(
@@ -29,16 +33,23 @@ class UserRepositoryImpl(
         password: String,
         role: UserRole,
     ): NetworkResult<AuthResult> = safeApiCall {
-        api.register(name, email, password, role.name).toDomain()
+        authApi.register(name, email, password, role.name).toDomain()
     }
 
-    override suspend fun logout(): NetworkResult<Unit> = NetworkResult.Success(Unit)
+    override suspend fun logout(): NetworkResult<Unit> = safeApiCall {
+        val refreshToken = settings.getRefreshToken() ?: ""
+        authApi.logout(refreshToken)
+        settings.clear()
+    }
 
     override fun getVolunteerProfile(id: String): Flow<VolunteerProfile> = flow {
-        // TODO
+        emit(profileApi.getVolunteerProfile(id).toDomain())
     }
 
     override fun getOrganizerProfile(id: String): Flow<OrganizerProfile> = flow {
-        // TODO
+        emit(profileApi.getOrganizerProfile(id).toDomain())
+    }
+    override fun getMyVolunteerProfile(): Flow<VolunteerProfile> = flow {
+        emit(profileApi.getMyVolunteerProfile().toDomain())
     }
 }

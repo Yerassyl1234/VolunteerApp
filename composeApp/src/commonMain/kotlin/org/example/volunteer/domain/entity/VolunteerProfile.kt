@@ -6,5 +6,6 @@ data class VolunteerProfile(
     val avatarUrl: String?,
     val email: String,
     val eventsAttended: Int,
-    val hoursVolunteered: Int
+    val hoursVolunteered: Int,
+    val badges:List<Badge> = emptyList(),
 )

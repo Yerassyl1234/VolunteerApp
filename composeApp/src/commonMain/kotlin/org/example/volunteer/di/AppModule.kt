@@ -1,10 +1,23 @@
 package org.example.volunteer.di
 
+import kotlinx.serialization.json.Json
 import org.example.volunteer.AppViewModel
 import org.example.volunteer.core.network.createHttpClient
+import org.example.volunteer.data.local.AppDatabase
+import org.example.volunteer.data.remote.api.AIApi
+import org.example.volunteer.data.remote.api.ApplicationApi
 import org.example.volunteer.data.remote.api.AuthApi
+import org.example.volunteer.data.remote.api.ChatApi
+import org.example.volunteer.data.remote.api.EventApi
+import org.example.volunteer.data.remote.api.ProfileApi
+import org.example.volunteer.data.repository.ApplicationRepositoryImpl
+import org.example.volunteer.data.repository.ChatRepositoryImpl
+import org.example.volunteer.data.repository.EventRepositoryImpl
 import org.example.volunteer.data.repository.SettingsRepositoryImpl
 import org.example.volunteer.data.repository.UserRepositoryImpl
+import org.example.volunteer.domain.repository.ApplicationRepository
+import org.example.volunteer.domain.repository.ChatRepository
+import org.example.volunteer.domain.repository.EventRepository
 import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.AcceptApplicantUseCase
@@ -34,7 +47,7 @@ import org.koin.dsl.module
 
 val appModule = module {
     factory { AcceptApplicantUseCase(get()) }
-    factory { ApplyForEventUseCase(get()) }
+    factory { ApplyForEventUseCase(get(), get(), get()) }
     factory { CancelApplicationUseCase(get(), get()) }
     factory { CreateEventUseCase(get()) }
     factory { LoginUseCase(get(), get()) }
@@ -54,16 +67,23 @@ val appModule = module {
     viewModel { MyEventsViewModel(get(), get()) }
     viewModel { OrgMyEventsViewModel(get()) }
     viewModel { ManageEventViewModel(get(), get(), get(), get()) }
-    viewModel { VolunteerProfileViewModel(get(), get()) }
+    viewModel { VolunteerProfileViewModel(get(), get(),get()) }
     viewModel { OrgProfileViewModel(get(), get()) }
     viewModel { AppViewModel(get()) }
 
     single { createHttpClient(get()) }
     single { AuthApi(get()) }
-    //single<ApplicationRepository> {}
-    //single<ChatRepository> {}
-    //single<EventRepository> {}
-    //single<NotificationRepository> {}
+    single { AuthApi(get()) }
+    single { EventApi(get()) }
+    single { ApplicationApi(get()) }
+    single { ChatApi(get()) }
+    single { ProfileApi(get()) }
+    single { AIApi(get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
-    single<UserRepository> { UserRepositoryImpl(get()) }
+    single<UserRepository> { UserRepositoryImpl(get(), get(), get()) }
+    single<EventRepository> { EventRepositoryImpl(get(), get()) }
+    single<ApplicationRepository> { ApplicationRepositoryImpl(get()) }
+    single { Json { ignoreUnknownKeys = true; isLenient = true } }
+    single<ChatRepository> { ChatRepositoryImpl(get(), get(), get(), get()) }
+    single { get<AppDatabase>().eventDao()}
 }

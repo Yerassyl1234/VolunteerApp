@@ -10,16 +10,15 @@ class CancelApplicationUseCase(
 ) {
     suspend operator fun invoke(
         applicationId: String,
-        eventId: String
+        eventId: String,
     ): NetworkResult<Unit> {
-        return when (
-            val result = appRepo.cancel(applicationId)) {
+        return when (val result = appRepo.cancel(applicationId)) {
             is NetworkResult.Success -> {
-                notifRepo.cancelReminder(eventId)
+                notifRepo.cancelAllReminders(eventId)
                 result
             }
-            is NetworkResult.Loading -> result
             is NetworkResult.Error -> result
+            is NetworkResult.Loading -> result
         }
     }
 }

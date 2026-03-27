@@ -1,7 +1,10 @@
 package org.example.volunteer.presentation.screens.mainevent.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -9,21 +12,15 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import org.example.volunteer.core.ui.DarkGreen
-import org.example.volunteer.core.ui.DesertWhite
-import org.example.volunteer.core.ui.Green
+import androidx.compose.ui.unit.dp
+import org.example.volunteer.core.ui.*
 import org.jetbrains.compose.resources.stringResource
 import volunteerapp.composeapp.generated.resources.Res
 import volunteerapp.composeapp.generated.resources.close_hint
@@ -37,8 +34,8 @@ fun EventSearchBar(
 ) {
     CompositionLocalProvider(
         LocalTextSelectionColors provides TextSelectionColors(
-            handleColor = Green,
-            backgroundColor = DesertWhite
+            handleColor = LightGreen,
+            backgroundColor = LightGreen.copy(alpha = 0.4f)
         )
     ) {
         OutlinedTextField(
@@ -46,19 +43,23 @@ fun EventSearchBar(
             onValueChange = onSearchQueryChanged,
             shape = RoundedCornerShape(100),
             colors = OutlinedTextFieldDefaults.colors(
-                cursorColor = Green,
-                focusedBorderColor = DarkGreen
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                cursorColor = LightGreen,
+                focusedContainerColor = PremiumSurface,
+                unfocusedContainerColor = PremiumSurface,
             ),
             placeholder = {
                 Text(
-                    text = stringResource(Res.string.search_hint)
+                    text = stringResource(Res.string.search_hint),
+                    color = PremiumGrayText.copy(alpha = 0.7f)
                 )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "searching icon",
-                    tint = MaterialTheme.colorScheme.onSurface.copy(0.66f)
+                    tint = PremiumGrayText
                 )
             },
             singleLine = true,
@@ -68,29 +69,23 @@ fun EventSearchBar(
             ),
             trailingIcon = {
                 AnimatedVisibility(
-                    visible = searchQuery.isNotBlank()
+                    visible = searchQuery.isNotBlank(),
+                    enter = fadeIn(),
+                    exit = fadeOut()
                 ) {
                     IconButton(
-                        onClick = {
-                            onSearchQueryChanged("")
-                        }
+                        onClick = { onSearchQueryChanged("") }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = stringResource(Res.string.close_hint),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = PremiumGrayText
                         )
                     }
                 }
             },
             modifier = modifier
-                .background(
-                    shape = RoundedCornerShape(100),
-                    color = DesertWhite
-                )
-                .minimumInteractiveComponentSize()
+                .fillMaxWidth()
         )
     }
-
-
 }

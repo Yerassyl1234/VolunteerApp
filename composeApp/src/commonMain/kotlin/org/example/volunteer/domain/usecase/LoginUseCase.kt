@@ -17,6 +17,7 @@ class LoginUseCase(
             is NetworkResult.Success -> {
                 settingsRepository.saveTokens(result.data.accessToken, result.data.refreshToken)
                 settingsRepository.saveRole(result.data.role)
+                settingsRepository.saveUserId(result.data.userId)
                 NetworkResult.Success(result.data.role)
             }
             is NetworkResult.Error -> result
