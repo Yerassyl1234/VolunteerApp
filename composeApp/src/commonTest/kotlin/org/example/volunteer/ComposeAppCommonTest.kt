@@ -1,4 +1,4 @@
-package org.example.project
+package org.example.volunteer
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

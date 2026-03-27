@@ -2,7 +2,7 @@ package org.example.volunteer.presentation.screens.registration
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.example.volunteer.core.common.Result
+import org.example.volunteer.core.common.handle
 import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.usecase.RegisterUseCase
 import org.example.volunteer.presentation.BaseViewModel
@@ -39,15 +39,15 @@ class RegistrationViewModel(
         if (!state.value.canSubmit) return@launch
         updateState { copy(isLoading = true) }
         val s = state.value
-        when (val result = registerUseCase(s.name, s.email, s.password, s.selectedRole)) {
-            is Result.Success -> {
+        registerUseCase(s.name,s.email,s.password,s.selectedRole).handle(
+            onSuccess = {
                 updateState { copy(isLoading = false) }
-                sendEffect(RegistrationEffect.NavigateToHome(result.data))
-            }
-            is Result.Error -> {
+                sendEffect(RegistrationEffect.NavigateToHome(it))
+            },
+            onError = {
                 updateState { copy(isLoading = false) }
-                sendEffect(RegistrationEffect.ShowError(result.exception.toUiText()))
+                sendEffect(RegistrationEffect.ShowError(it.toUiText()))
             }
-        }
+        )
     }
 }

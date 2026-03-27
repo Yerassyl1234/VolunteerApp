@@ -1,14 +1,17 @@
 package org.example.volunteer.presentation.screens.orgprofile
 
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.example.volunteer.core.common.asNetworkResult
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.LogoutUseCase
 import org.example.volunteer.presentation.BaseViewModel
 
 class OrgProfileViewModel(
     private val userRepository: UserRepository,
-    private val logout: LogoutUseCase,
+    private val logoutUseCase: LogoutUseCase,
 ) : BaseViewModel<OrgProfileUiState, OrgProfileAction, OrgProfileEffect>(
     initialState = OrgProfileUiState()
 ) {
@@ -25,16 +28,21 @@ class OrgProfileViewModel(
     }
 
     private fun loadProfile() {
-        viewModelScope.launch {
-            updateState { copy(isLoading = true) }
-            userRepository.getOrganizerProfile("me").collect { profile ->
-                updateState { copy(profile = profile, isLoading = false) }
+        userRepository.getOrganizerProfile("me")
+            .asNetworkResult()
+            .onEach { result ->
+                updateState {
+                    copy(
+                        isLoading = result.isLoading,
+                        profile = result.getOrNull()?:profile,
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     private fun performLogout() = viewModelScope.launch {
-        logout()
+        logoutUseCase()
         sendEffect(OrgProfileEffect.NavigateToLogin)
     }
 }

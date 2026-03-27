@@ -1,4 +1,4 @@
-package org.example.volunteer.presentation.screens.main
+package org.example.volunteer.presentation.screens.mainevent
 
 import org.example.volunteer.domain.entity.Category
 

@@ -1,7 +1,7 @@
 package org.example.volunteer.data.repository
 
 import kotlinx.coroutines.flow.Flow
-import org.example.volunteer.core.common.Result
+import org.example.volunteer.core.common.NetworkResult
 import org.example.volunteer.domain.entity.Event
 import org.example.volunteer.domain.entity.EventDraft
 import org.example.volunteer.domain.entity.EventFilter
@@ -20,18 +20,18 @@ class EventRepositoryImpl : EventRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createEvent(draft: EventDraft): Result<Event> {
+    override suspend fun createEvent(draft: EventDraft): NetworkResult<Event> {
         TODO("Not yet implemented")
     }
 
     override suspend fun updateEvent(
         id: String,
         draft: EventDraft
-    ): Result<Event> {
+    ): NetworkResult<Event> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun archiveEvent(id: String): Result<Unit> {
+    override suspend fun archiveEvent(id: String): NetworkResult<Unit> {
         TODO("Not yet implemented")
     }
 }

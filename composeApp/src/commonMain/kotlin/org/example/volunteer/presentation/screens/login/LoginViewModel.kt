@@ -2,7 +2,7 @@ package org.example.volunteer.presentation.screens.login
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.example.volunteer.core.common.Result
+import org.example.volunteer.core.common.handle
 import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.usecase.LoginUseCase
 import org.example.volunteer.presentation.BaseViewModel
@@ -25,16 +25,15 @@ class LoginViewModel(
         if (!state.value.canSubmit) return@launch
         updateState { copy(isLoading = true) }
         val s = state.value
-        when (val result = loginUseCase(s.email, s.password)) {
-            is Result.Success -> {
+        loginUseCase(s.email,s.password).handle(
+            onSuccess = {
                 updateState { copy(isLoading = false) }
-                sendEffect(LoginEffect.NavigateToHome(result.data))
-            }
-            is Result.Error -> {
+                sendEffect(LoginEffect.NavigateToHome(it))
+            },
+            onError = {
                 updateState { copy(isLoading = false) }
-                sendEffect(LoginEffect.ShowError(result.exception.toUiText()))
+                sendEffect(LoginEffect.ShowError(it.toUiText()))
             }
-
-        }
+        )
     }
 }

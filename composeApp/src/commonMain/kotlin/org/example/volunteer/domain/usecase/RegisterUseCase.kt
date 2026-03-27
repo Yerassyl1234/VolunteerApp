@@ -1,10 +1,9 @@
 package org.example.volunteer.domain.usecase
 
+import org.example.volunteer.core.common.NetworkResult
 import org.example.volunteer.domain.entity.UserRole
 import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
-import org.example.volunteer.core.common.Result
-import org.example.volunteer.core.common.map
 
 class RegisterUseCase(
     private val userRepository: UserRepository,
@@ -15,12 +14,15 @@ class RegisterUseCase(
         email: String,
         password: String,
         role: UserRole,
-    ): Result<UserRole> {
-        val result = userRepository.register(name, email, password, role)
-        if (result is Result.Success) {
-            settingsRepository.saveTokens(result.data.accessToken, result.data.refreshToken)
-            settingsRepository.saveRole(result.data.role)
+    ): NetworkResult<UserRole> {
+        return when (val result = userRepository.register(name, email, password, role)) {
+            is NetworkResult.Success -> {
+                settingsRepository.saveTokens(result.data.accessToken, result.data.refreshToken)
+                settingsRepository.saveRole(result.data.role)
+                NetworkResult.Success(result.data.role)
+            }
+            is NetworkResult.Error -> result
+            is NetworkResult.Loading -> result
         }
-        return result.map { it.role }
     }
 }

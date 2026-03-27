@@ -2,7 +2,7 @@ package org.example.volunteer.presentation.screens.createevent
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.example.volunteer.core.common.Result
+import org.example.volunteer.core.common.handle
 import org.example.volunteer.core.common.toUiText
 import org.example.volunteer.domain.repository.EventRepository
 import org.example.volunteer.domain.usecase.CreateEventUseCase
@@ -14,20 +14,19 @@ class CreateEventViewModel(
 ) : BaseViewModel<CreateEventUIState, CreateEventAction, CreateEventEffect>(
     initialState = CreateEventUIState()
 ) {
-
     override fun onIntent(intent: CreateEventAction) {
         when (intent) {
-            is CreateEventAction.InputEventTitle   -> updateState { copy(title = intent.title) }
-            is CreateEventAction.InputDescription  -> updateState { copy(description = intent.description) }
-            is CreateEventAction.SetDate           -> updateState { copy(date = intent.date) }
-            is CreateEventAction.SetTime           -> updateState { copy(time = intent.time) }
-            is CreateEventAction.SetLocation       -> updateState { copy(location = intent.location) }
-            is CreateEventAction.AddRequirement    -> addRequirement(intent.requirement)
+            is CreateEventAction.InputEventTitle -> updateState { copy(title = intent.title) }
+            is CreateEventAction.InputDescription -> updateState { copy(description = intent.description) }
+            is CreateEventAction.SetDate -> updateState { copy(date = intent.date) }
+            is CreateEventAction.SetTime -> updateState { copy(time = intent.time) }
+            is CreateEventAction.SetLocation -> updateState { copy(location = intent.location) }
+            is CreateEventAction.AddRequirement -> addRequirement(intent.requirement)
             is CreateEventAction.RemoveRequirement -> removeRequirement(intent.id)
-            CreateEventAction.GenerateImage        -> generateImage(regenerate = false)
-            CreateEventAction.RegenerateImage      -> generateImage(regenerate = true)
-            CreateEventAction.BackButtonClick      -> sendEffect(CreateEventEffect.NavigateBack)
-            CreateEventAction.PublishEvent         -> publishEvent()
+            CreateEventAction.GenerateImage -> generateImage(regenerate = false)
+            CreateEventAction.RegenerateImage -> generateImage(regenerate = true)
+            CreateEventAction.BackButtonClick -> sendEffect(CreateEventEffect.NavigateBack)
+            CreateEventAction.PublishEvent -> publishEvent()
         }
     }
 
@@ -59,15 +58,15 @@ class CreateEventViewModel(
 
     private fun publishEvent() = viewModelScope.launch {
         updateState { copy(isLoading = true) }
-        when (val result = createEventUseCase(state.value.toDraft())) {
-            is Result.Success -> {
+        createEventUseCase(state.value.toDraft()).handle(
+            onSuccess = {
                 updateState { copy(isLoading = false) }
                 sendEffect(CreateEventEffect.NavigateToMyEvents)
-            }
-            is Result.Error -> {
+            },
+            onError = {
                 updateState { copy(isLoading = false) }
-                sendEffect(CreateEventEffect.ShowError(result.exception.toUiText()))
+                sendEffect(CreateEventEffect.ShowError(it.toUiText()))
             }
-        }
+        )
     }
 }

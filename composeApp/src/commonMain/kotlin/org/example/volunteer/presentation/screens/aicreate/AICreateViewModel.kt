@@ -2,9 +2,10 @@ package org.example.volunteer.presentation.screens.aicreate
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.example.volunteer.core.common.NetworkResult
+import org.example.volunteer.core.common.handle
 import org.example.volunteer.domain.usecase.CreateEventUseCase
 import org.example.volunteer.presentation.BaseViewModel
-import org.example.volunteer.core.common.Result
 import org.example.volunteer.core.common.toUiText
 
 class AICreateViewModel(
@@ -33,13 +34,13 @@ class AICreateViewModel(
     private fun publish() = viewModelScope.launch {
         if (!state.value.canPublish) return@launch
         updateState { copy(isPublishing = true) }
-        when (val result = createEvent(state.value.draft)) {
-            is Result.Success -> sendEffect(AICreateEffect.NavigateToMyEvents)
-            is Result.Error -> {
-                updateState { copy(isPublishing = false) }
-                sendEffect(AICreateEffect.ShowError(result.exception.toUiText()))
+        createEvent(state.value.draft).handle(
+            onSuccess = {sendEffect(AICreateEffect.NavigateToMyEvents)},
+            onError = {
+                updateState { copy(isPublishing=false) }
+                sendEffect(AICreateEffect.ShowError(it.toUiText()))
             }
-        }
+        )
     }
 
     private fun saveDraft() = viewModelScope.launch {

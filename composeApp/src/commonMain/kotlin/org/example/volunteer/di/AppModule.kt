@@ -1,10 +1,10 @@
 package org.example.volunteer.di
 
 import org.example.volunteer.AppViewModel
-import org.example.volunteer.domain.repository.ApplicationRepository
-import org.example.volunteer.domain.repository.ChatRepository
-import org.example.volunteer.domain.repository.EventRepository
-import org.example.volunteer.domain.repository.NotificationRepository
+import org.example.volunteer.core.network.createHttpClient
+import org.example.volunteer.data.remote.api.AuthApi
+import org.example.volunteer.data.repository.SettingsRepositoryImpl
+import org.example.volunteer.data.repository.UserRepositoryImpl
 import org.example.volunteer.domain.repository.SettingsRepository
 import org.example.volunteer.domain.repository.UserRepository
 import org.example.volunteer.domain.usecase.AcceptApplicantUseCase
@@ -22,7 +22,7 @@ import org.example.volunteer.presentation.screens.chatroom.ChatRoomViewModel
 import org.example.volunteer.presentation.screens.createevent.CreateEventViewModel
 import org.example.volunteer.presentation.screens.eventdetails.EventDetailsViewModel
 import org.example.volunteer.presentation.screens.login.LoginViewModel
-import org.example.volunteer.presentation.screens.main.MainEventViewModel
+import org.example.volunteer.presentation.screens.mainevent.MainEventViewModel
 import org.example.volunteer.presentation.screens.manageevents.ManageEventViewModel
 import org.example.volunteer.presentation.screens.myevents.MyEventsViewModel
 import org.example.volunteer.presentation.screens.orgmyevents.OrgMyEventsViewModel
@@ -58,10 +58,12 @@ val appModule = module {
     viewModel { OrgProfileViewModel(get(), get()) }
     viewModel { AppViewModel(get()) }
 
-    single<ApplicationRepository>{}
-    single<ChatRepository>{}
-    single<EventRepository>{}
-    single<NotificationRepository>{}
-    single<SettingsRepository>{}
-    single<UserRepository>{}
+    single { createHttpClient(get()) }
+    single { AuthApi(get()) }
+    //single<ApplicationRepository> {}
+    //single<ChatRepository> {}
+    //single<EventRepository> {}
+    //single<NotificationRepository> {}
+    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+    single<UserRepository> { UserRepositoryImpl(get()) }
 }
